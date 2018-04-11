@@ -16,10 +16,23 @@ class BaseView(QWidget):
     def initUI(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-        layout = QVBoxLayout()
-        layout.addWidget(self.initScreen())
-        layout.addLayout(self.initKeypad())
-        self.setLayout(layout)
+        overall_layout = QVBoxLayout()
+
+        screen_area_layout = QHBoxLayout()
+        screen_area_layout.addLayout(self.initScreenButtons(True))
+        screen_area_layout.addWidget(self.initScreen())
+        screen_area_layout.addLayout(self.initScreenButtons(False))
+        overall_layout.addLayout(screen_area_layout)
+
+        button_area_layout = QHBoxLayout()
+        button_area_layout.addWidget(self.initReceiptSlot())
+        button_area_layout.addLayout(self.initNumericalKeypad())
+        button_area_layout.addLayout(self.initCardSlotAndButtons())
+        overall_layout.addLayout(button_area_layout)
+
+        overall_layout.addLayout(self.initDepositAndDispenser())
+
+        self.setLayout(overall_layout)
         self.show()
 
     def initScreen(self):
@@ -28,14 +41,32 @@ class BaseView(QWidget):
 
         cursor = textEdit.textCursor()
         cursor.insertHtml('<br><br>')
+
+        # This is a call to the required subclass method
         self.setScreenContent(textEdit)
+
         block_format = cursor.blockFormat()
         block_format.setAlignment(Qt.AlignCenter)
         cursor.mergeBlockFormat(block_format)
         return textEdit
 
+    def initScreenButtons(self, leftSide):
+        layout = QVBoxLayout()
+        if leftSide:
+            layout.addWidget(QPushButton('L1'))
+            layout.addWidget(QPushButton('L2'))
+            layout.addWidget(QPushButton('L3'))
+            layout.addWidget(QPushButton('L4'))
+        else:
+            layout.addWidget(QPushButton('R1'))
+            layout.addWidget(QPushButton('R2'))
+            layout.addWidget(QPushButton('R3'))
+            layout.addWidget(QPushButton('R4'))
+
+        return layout
+
     #TODO: I think this should be its own class, might help with the controller interactions
-    def initKeypad(self):
+    def initNumericalKeypad(self):
         layout = QVBoxLayout()
 
         row_layout = QHBoxLayout()
@@ -62,3 +93,21 @@ class BaseView(QWidget):
 
         return layout
 
+    def initReceiptSlot(self):
+        return QPushButton('Printed Receipt')
+
+    def initCardSlotAndButtons(self):
+        layout = QVBoxLayout()
+        layout.addWidget(QPushButton('Card Slot'))
+        layout.addWidget(QPushButton('Enter'))
+        layout.addWidget(QPushButton('Clear'))
+        layout.addWidget(QPushButton('Cancel'))
+
+        return layout
+
+    def initDepositAndDispenser(self):
+        layout = QHBoxLayout()
+        layout.addWidget(QPushButton('Cash Dispenser'))
+        layout.addWidget(QPushButton('Deposit Slot'))
+
+        return layout
