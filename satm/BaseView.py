@@ -98,7 +98,11 @@ class BaseView(QWidget):
 
     def initCardSlotAndButtons(self):
         layout = QVBoxLayout()
-        layout.addWidget(QPushButton('Card Slot'))
+
+        self.card_slot = QPushButton('Card Slot')
+        self.card_slot.clicked.connect(lambda:self.handle_card_slot())
+        layout.addWidget(self.card_slot)
+
         layout.addWidget(QPushButton('Enter'))
         layout.addWidget(QPushButton('Clear'))
         layout.addWidget(QPushButton('Cancel'))
@@ -111,3 +115,6 @@ class BaseView(QWidget):
         layout.addWidget(QPushButton('Deposit Slot'))
 
         return layout
+
+    def handle_card_slot(self):
+        print('card slot pressed, controller for this screen ignores this')
