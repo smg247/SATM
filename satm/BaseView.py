@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QTextEdit, QVBoxLayout, QHBoxLayout, QPushButton
+from PyQt5.QtWidgets import QApplication, QWidget, QTextEdit, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from PyQt5.QtCore import Qt
 
 
@@ -9,8 +9,8 @@ class BaseView(QWidget):
         self.title = 'Simple ATM'
         self.left = 10
         self.top = 10
-        self.width = 1000
-        self.height = 1000
+        self.width = 800
+        self.height = 600
         self.initUI()
 
     def initUI(self):
@@ -36,19 +36,15 @@ class BaseView(QWidget):
         self.show()
 
     def initScreen(self):
-        textEdit = QTextEdit()
-        textEdit.setReadOnly(True)
+        screen = QLabel()
+        screen.setWordWrap(True)
+        screen.setAlignment(Qt.AlignCenter)
+        screen.setFixedWidth(600)
+        screen.setStyleSheet('QLabel { background-color : white; }')
+        self.setScreenContent(screen)
 
-        cursor = textEdit.textCursor()
-        cursor.insertHtml('<br><br>')
+        return screen
 
-        # This is a call to the required subclass method
-        self.setScreenContent(textEdit)
-
-        block_format = cursor.blockFormat()
-        block_format.setAlignment(Qt.AlignCenter)
-        cursor.mergeBlockFormat(block_format)
-        return textEdit
 
     def initScreenButtons(self, leftSide):
         layout = QVBoxLayout()
@@ -65,30 +61,58 @@ class BaseView(QWidget):
 
         return layout
 
-    #TODO: I think this should be its own class, might help with the controller interactions
     def initNumericalKeypad(self):
         layout = QVBoxLayout()
 
         row_layout = QHBoxLayout()
-        row_layout.addWidget(QPushButton('1'))
-        row_layout.addWidget(QPushButton('2'))
-        row_layout.addWidget(QPushButton('3'))
+        self.btn_1 = QPushButton('1')
+        self.btn_1.clicked.connect(lambda:self.handle_numerical_btn(1))
+        row_layout.addWidget(self.btn_1)
+
+        self.btn_2 = QPushButton('2')
+        self.btn_2.clicked.connect(lambda: self.handle_numerical_btn(2))
+        row_layout.addWidget(self.btn_2)
+
+        self.btn_3 = QPushButton('3')
+        self.btn_3.clicked.connect(lambda: self.handle_numerical_btn(3))
+        row_layout.addWidget(self.btn_3)
+
         layout.addLayout(row_layout)
 
         row_layout = QHBoxLayout()
-        row_layout.addWidget(QPushButton('4'))
-        row_layout.addWidget(QPushButton('5'))
-        row_layout.addWidget(QPushButton('6'))
+        self.btn_4 = QPushButton('4')
+        self.btn_4.clicked.connect(lambda: self.handle_numerical_btn(4))
+        row_layout.addWidget(self.btn_4)
+
+        self.btn_5 = QPushButton('5')
+        self.btn_5.clicked.connect(lambda: self.handle_numerical_btn(5))
+        row_layout.addWidget(self.btn_5)
+
+        self.btn_6 = QPushButton('6')
+        self.btn_6.clicked.connect(lambda: self.handle_numerical_btn(6))
+        row_layout.addWidget(self.btn_6)
+
         layout.addLayout(row_layout)
 
         row_layout = QHBoxLayout()
-        row_layout.addWidget(QPushButton('7'))
-        row_layout.addWidget(QPushButton('8'))
-        row_layout.addWidget(QPushButton('9'))
+        self.btn_7 = QPushButton('7')
+        self.btn_7.clicked.connect(lambda: self.handle_numerical_btn(7))
+        row_layout.addWidget(self.btn_7)
+
+        self.btn_8 = QPushButton('8')
+        self.btn_8.clicked.connect(lambda: self.handle_numerical_btn(8))
+        row_layout.addWidget(self.btn_8)
+
+        self.btn_9 = QPushButton('9')
+        self.btn_9.clicked.connect(lambda: self.handle_numerical_btn(9))
+        row_layout.addWidget(self.btn_9)
+
         layout.addLayout(row_layout)
 
         row_layout = QHBoxLayout()
-        row_layout.addWidget(QPushButton('0'))
+        self.btn_0 = QPushButton('0')
+        self.btn_0.clicked.connect(lambda: self.handle_numerical_btn(0))
+        row_layout.addWidget(self.btn_0)
         layout.addLayout(row_layout)
 
         return layout
@@ -118,3 +142,6 @@ class BaseView(QWidget):
 
     def handle_card_slot(self):
         print('card slot pressed, controller for this screen ignores this')
+
+    def handle_numerical_btn(self, value):
+        print(str(value) + ' was pressed, controller for this screen ignores this')
