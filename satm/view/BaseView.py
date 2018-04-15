@@ -127,7 +127,9 @@ class BaseView(QWidget):
         self.card_slot.clicked.connect(lambda:self.handle_card_slot())
         layout.addWidget(self.card_slot)
 
-        layout.addWidget(QPushButton('Enter'))
+        self.enter_btn = QPushButton('Enter')
+        self.enter_btn.clicked.connect(lambda: self.handle_enter_btn())
+        layout.addWidget(self.enter_btn)
         layout.addWidget(QPushButton('Clear'))
         layout.addWidget(QPushButton('Cancel'))
 
@@ -142,6 +144,9 @@ class BaseView(QWidget):
 
     def handle_card_slot(self):
         print('card slot pressed, controller for this screen ignores this')
+
+    def handle_enter_btn(self):
+        print('enter button pressed, controller for this screen ignores this')
 
     def handle_numerical_btn(self, value):
         print(str(value) + ' was pressed, controller for this screen ignores this')

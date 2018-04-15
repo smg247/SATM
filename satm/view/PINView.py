@@ -1,4 +1,4 @@
-from BaseView import BaseView
+from .BaseView import BaseView
 
 entries = ['_ _ _ _', '_ _ _ *', '_ _ * *', '_ * * *', '* * * *']
 
@@ -19,14 +19,9 @@ class PINView(BaseView):
                        '<h2>' + entries[self.numbers_entered] + '</h2>')
 
     def handle_numerical_btn(self, value):
-        #TODO: all of this logic needs to go within some view transitioning controller it could possibly even have some state on it to make things easier. this is untestable as is.
-        self.numbers_entered += 1
-        self.current_pin += str(value)
-        print('pin is now: ' + self.current_pin)
-        if self.numbers_entered < 4:
-            new_pin_view = PINView(self.current_pin)
-            new_pin_view.show()
-            self.close()
-        else:
-            #TODO: go to next page
-            pass
+        from ..controller import Controller # Who knew you could do this? I've got some cyclical imports, this solves it
+        Controller.handle_pin_entry(value, self)
+
+    def handle_enter_btn(self):
+        from ..controller import Controller
+        Controller.pin_entry_completed(self)

@@ -4,8 +4,8 @@
 class Account():
 
     def __init__(self, pan, pin):
-        self.pan = pan
-        self.pin = pin
+        self.pan = str(pan)
+        self.pin = str(pin)
         self.balance = 0
 
     def set_balance(self, balance):
