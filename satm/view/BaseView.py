@@ -156,7 +156,9 @@ class BaseView(QWidget):
     def initDepositAndDispenser(self):
         layout = QHBoxLayout()
         layout.addWidget(QPushButton('Cash Dispenser'))
-        layout.addWidget(QPushButton('Deposit Slot'))
+        self.deposit_slot = QPushButton('Deposit Slot')
+        self.deposit_slot.clicked.connect(lambda: self.handle_deposit_slot())
+        layout.addWidget(self.deposit_slot)
 
         return layout
 
@@ -179,3 +181,6 @@ class BaseView(QWidget):
 
     def handle_side_btn(self, value):
         print(str(value) + ' was pressed, controller for this screen ignores this')
+
+    def handle_deposit_slot(self):
+        print('Deposit Slot pressed, controller for this screen ignores this')

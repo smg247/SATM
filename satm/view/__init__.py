@@ -5,3 +5,6 @@ from .SelectTransactionView import SelectTransactionView
 from .BalanceView import BalanceView
 from .BalancePrintingView import BalancePrintingView
 from .IncorrectPINView import IncorrectPINView
+from .DepositView import DepositView
+from .MalfunctionView import MalfunctionView
+from .InsertDepositView import InsertDepositView

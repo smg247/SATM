@@ -4,12 +4,21 @@ from ..view.SelectTransactionView import SelectTransactionView
 from ..view.BalanceView import BalanceView
 from ..view.BalancePrintingView import BalancePrintingView
 from ..view.IncorrectPINView import IncorrectPINView
+from ..view.DepositView import DepositView
+from ..view.MalfunctionView import MalfunctionView
+from ..view.InsertDepositView import InsertDepositView
+
+from .TerminalStatus import *
 
 accounts = []
 current_account = None
+
 current_pin = ''
 numbers_entered = 0
 pin_attempts = 0
+
+deposit_withdrawal_amount = ''
+
 
 def transition_to_welcome(from_view):
     global current_pin, current_account, numbers_entered
@@ -20,6 +29,7 @@ def transition_to_welcome(from_view):
     welcome_view.show()
     from_view.close()
 
+
 def transition_to_pin_entry(from_view):
     # TODO: for now we are going with the assumption that there is only one account and not going to require entry of the PAN, moving on to PIN screen
     print('Transitioning to PIN Entry')
@@ -27,6 +37,7 @@ def transition_to_pin_entry(from_view):
     pin_view = PINView(None)
     pin_view.show()
     from_view.close()
+
 
 def handle_pin_entry(number, from_view):
     global current_pin, numbers_entered
@@ -42,12 +53,13 @@ def handle_pin_entry(number, from_view):
     new_pin_view.show()
     from_view.close()
 
+
 def transition_to_transaction_selection(from_view):
     print('Transitioning to transaction selection')
     select_transaction_view = SelectTransactionView()
     select_transaction_view.show()
-
     from_view.close()
+
 
 def validate_pin_and_transition(from_view):
     global current_account, pin_attempts
@@ -68,17 +80,54 @@ def validate_pin_and_transition(from_view):
         incorrect_pin_view = IncorrectPINView()
         incorrect_pin_view.show()
 
+
 def transition_to_balance_printing(from_view):
     print('Transitioning to balance')
     balance_printing_view = BalancePrintingView(current_account)
     balance_printing_view.show()
     from_view.close()
 
+
 def transition_to_deposit(from_view):
     print('Transitioning to deposit')
+    if deposit_withdrawal_amount != '' or is_deposit_slot_functional():
+        print('Deposit slot functional')
+        deposit_view = DepositView(deposit_withdrawal_amount)
+        deposit_view.show()
+    else:
+        print('Deposit slot not functional')
+        malfunction_view = MalfunctionView('deposit')
+        malfunction_view.show()
+
+    from_view.close()
+
 
 def transition_to_withdrawal(from_view):
     print('Transitioning to withdrawal')
+
+
+def handle_deposit_withdrawal_amount_entry(number, is_deposit, from_view):
+    global deposit_withdrawal_amount
+    deposit_withdrawal_amount += str(number)
+    print('deposit/withdrawal amount is now: ' + str(deposit_withdrawal_amount))
+    if is_deposit:
+        transition_to_deposit(from_view)
+    else:
+        transition_to_withdrawal(from_view)
+
+
+def transition_to_insert_deposit(from_view):
+    print('Transitioning to insert deposit')
+    insert_deposit_view = InsertDepositView()
+    insert_deposit_view.show()
+    from_view.close()
+
+
+def handle_deposit(from_view):
+    print('Deposit slot used with amount of ' + str(deposit_withdrawal_amount))
+    current_account.deposit(int(deposit_withdrawal_amount))
+    transition_to_balance_printing(from_view)
+
 
 def find_account_from_pin(pin):
     #TODO: going to need to make sure this matches the PAN at some point
@@ -87,6 +136,7 @@ def find_account_from_pin(pin):
             return account
 
     return None
+
 
 def reset_pin_entry():
     global current_pin, numbers_entered
