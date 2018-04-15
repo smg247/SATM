@@ -54,10 +54,21 @@ class BaseView(QWidget):
             layout.addWidget(QPushButton('L3'))
             layout.addWidget(QPushButton('L4'))
         else:
-            layout.addWidget(QPushButton('R1'))
-            layout.addWidget(QPushButton('R2'))
-            layout.addWidget(QPushButton('R3'))
-            layout.addWidget(QPushButton('R4'))
+            self.r1_btn = QPushButton('R1')
+            self.r1_btn.clicked.connect(lambda: self.handle_side_btn('R1'))
+            layout.addWidget(self.r1_btn)
+
+            self.r2_btn = QPushButton('R2')
+            self.r2_btn.clicked.connect(lambda: self.handle_side_btn('R2'))
+            layout.addWidget(self.r2_btn)
+
+            self.r3_btn = QPushButton('R3')
+            self.r3_btn.clicked.connect(lambda: self.handle_side_btn('R3'))
+            layout.addWidget(self.r3_btn)
+
+            self.r4_btn = QPushButton('R4')
+            self.r4_btn.clicked.connect(lambda: self.handle_side_btn('R4'))
+            layout.addWidget(self.r4_btn)
 
         return layout
 
@@ -118,7 +129,8 @@ class BaseView(QWidget):
         return layout
 
     def initReceiptSlot(self):
-        return QPushButton('Printed Receipt')
+        self.receipt_slot = QPushButton('Printed Receipt')
+        return self.receipt_slot
 
     def initCardSlotAndButtons(self):
         layout = QVBoxLayout()
@@ -130,8 +142,14 @@ class BaseView(QWidget):
         self.enter_btn = QPushButton('Enter')
         self.enter_btn.clicked.connect(lambda: self.handle_enter_btn())
         layout.addWidget(self.enter_btn)
-        layout.addWidget(QPushButton('Clear'))
-        layout.addWidget(QPushButton('Cancel'))
+
+        self.clear_btn = QPushButton('Clear')
+        self.clear_btn.clicked.connect(lambda: self.handle_clear_btn())
+        layout.addWidget(self.clear_btn)
+
+        self.cancel_btn = QPushButton('Cancel')
+        self.cancel_btn.clicked.connect(lambda: self.handle_cancel_btn())
+        layout.addWidget(self.cancel_btn)
 
         return layout
 
@@ -148,5 +166,16 @@ class BaseView(QWidget):
     def handle_enter_btn(self):
         print('enter button pressed, controller for this screen ignores this')
 
+    def handle_clear_btn(self):
+        print('clear button pressed, controller for this screen ignores this')
+
+    def handle_cancel_btn(self):
+        from ..controller import Controller
+        print('cancel button pressed, always returns to welcome')
+        Controller.transition_to_welcome(self)
+
     def handle_numerical_btn(self, value):
+        print(str(value) + ' was pressed, controller for this screen ignores this')
+
+    def handle_side_btn(self, value):
         print(str(value) + ' was pressed, controller for this screen ignores this')

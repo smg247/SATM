@@ -24,4 +24,9 @@ class PINView(BaseView):
 
     def handle_enter_btn(self):
         from ..controller import Controller
-        Controller.pin_entry_completed(self)
+        Controller.validate_pin_and_transition(self)
+
+    def handle_clear_btn(self):
+        from ..controller import Controller
+        Controller.transition_to_pin_entry(self)
+
