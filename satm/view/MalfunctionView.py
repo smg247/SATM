@@ -15,5 +15,7 @@ class MalfunctionView(BaseView):
 
         if value == 'R1':
             Controller.transition_to_transaction_selection(self)
+        elif value == 'R2':
+            Controller.transition_to_exit(self)
         else:
             print('Invalid option selected, ignoring')

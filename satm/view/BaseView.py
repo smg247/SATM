@@ -155,7 +155,8 @@ class BaseView(QWidget):
 
     def initDepositAndDispenser(self):
         layout = QHBoxLayout()
-        layout.addWidget(QPushButton('Cash Dispenser'))
+        self.cash_dispenser = QPushButton('Cash Dispenser')
+        layout.addWidget(self.cash_dispenser)
         self.deposit_slot = QPushButton('Deposit Slot')
         self.deposit_slot.clicked.connect(lambda: self.handle_deposit_slot())
         layout.addWidget(self.deposit_slot)

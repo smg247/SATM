@@ -8,4 +8,13 @@ class BalanceView(BaseView):
         super(BalanceView, self).__init__()
 
     def setScreenContent(self, screen):
-        screen.setText('<h1>Balance is: $' + str(self.current_account.balance) + '</h1>')
+        screen.setText('<h1>Balance is: $' + str(self.current_account.balance) + '</h1>' +
+                       '<h2>Another transaction? Press R1 to continue</h2>')
+
+    def handle_side_btn(self, value):
+        from satm.controller import Controller
+
+        if value == 'R1':
+            Controller.transition_to_transaction_selection(self)
+        else:
+            print('Invalid option selected, ignoring')

@@ -8,3 +8,7 @@ from .IncorrectPINView import IncorrectPINView
 from .DepositView import DepositView
 from .MalfunctionView import MalfunctionView
 from .InsertDepositView import InsertDepositView
+from .WithdrawalView import WithdrawalView
+from .WithdrawalProcessedView import WithdrawalProcessedView
+from .WithdrawalFailedView import WithdrawalFailedView
+from .ExitView import ExitView

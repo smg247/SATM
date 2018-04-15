@@ -7,6 +7,10 @@ from ..view.IncorrectPINView import IncorrectPINView
 from ..view.DepositView import DepositView
 from ..view.MalfunctionView import MalfunctionView
 from ..view.InsertDepositView import InsertDepositView
+from ..view.WithdrawalView import WithdrawalView
+from ..view.WithdrawalProcessedView import WithdrawalProcessedView
+from ..view.WithdrawalFailedView import WithdrawalFailedView
+from ..view.ExitView import ExitView
 
 from .TerminalStatus import *
 
@@ -27,6 +31,12 @@ def transition_to_welcome(from_view):
     numbers_entered = 0
     welcome_view = WelcomeView()
     welcome_view.show()
+    from_view.close()
+
+
+def transition_to_exit(from_view):
+    exit_view = ExitView()
+    exit_view.show()
     from_view.close()
 
 
@@ -88,6 +98,13 @@ def transition_to_balance_printing(from_view):
     from_view.close()
 
 
+def transition_to_show_balance(from_view):
+    print('Transitioning to showing balance')
+    balance_view = BalanceView(current_account)
+    balance_view.show()
+    from_view.close()
+
+
 def transition_to_deposit(from_view):
     print('Transitioning to deposit')
     if deposit_withdrawal_amount != '' or is_deposit_slot_functional():
@@ -104,6 +121,15 @@ def transition_to_deposit(from_view):
 
 def transition_to_withdrawal(from_view):
     print('Transitioning to withdrawal')
+    if deposit_withdrawal_amount != '' or is_withdrawal_slot_functional():
+        withdrawal_view = WithdrawalView(deposit_withdrawal_amount)
+        withdrawal_view.show()
+    else:
+        print('Withdrawal not functional')
+        malfunction_view = MalfunctionView('withdrawal')
+        malfunction_view.show()
+
+    from_view.close()
 
 
 def handle_deposit_withdrawal_amount_entry(number, is_deposit, from_view):
@@ -124,9 +150,28 @@ def transition_to_insert_deposit(from_view):
 
 
 def handle_deposit(from_view):
+    global deposit_withdrawal_amount
     print('Deposit slot used with amount of ' + str(deposit_withdrawal_amount))
     current_account.deposit(int(deposit_withdrawal_amount))
+    deposit_withdrawal_amount = ''
     transition_to_balance_printing(from_view)
+
+
+def handle_withdrawal(from_view):
+    global deposit_withdrawal_amount
+    print('Withdrawal requested for amount of ' + str(deposit_withdrawal_amount))
+    if int(total_currency()) >= int(deposit_withdrawal_amount) and int(deposit_withdrawal_amount) % 10 == 0 and int(current_account.balance) >= int(deposit_withdrawal_amount):
+        print('Withdrawal processed')
+        current_account.withdraw(int(deposit_withdrawal_amount))
+        withdrawal_processed_view = WithdrawalProcessedView(deposit_withdrawal_amount)
+        withdrawal_processed_view.show()
+    else:
+        print('Unable to perform withdrawal')
+        withdrawal_failed_view = WithdrawalFailedView()
+        withdrawal_failed_view.show()
+
+    deposit_withdrawal_amount = ''
+    from_view.close()
 
 
 def find_account_from_pin(pin):
