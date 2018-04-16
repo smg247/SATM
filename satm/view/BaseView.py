@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QTextEdit, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QTextEdit, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QComboBox
 from PyQt5.QtCore import Qt
 
 
@@ -135,9 +135,19 @@ class BaseView(QWidget):
     def initCardSlotAndButtons(self):
         layout = QVBoxLayout()
 
-        self.card_slot = QPushButton('Card Slot')
-        self.card_slot.clicked.connect(lambda:self.handle_card_slot())
-        layout.addWidget(self.card_slot)
+        card_slot_layout = QHBoxLayout()
+        card_slot_layout.addWidget(QLabel('Card Slot:'))
+        self.card_slot = QComboBox()
+        if self.display_list_of_accounts():
+            self.card_slot.addItem('Select PAN')
+            for account in self.accounts:
+                self.card_slot.addItem(account.pan)
+        else:
+            self.card_slot.addItem('CARD INSERTED')
+
+        self.card_slot.activated[str].connect(lambda:self.handle_card_slot())
+        card_slot_layout.addWidget(self.card_slot)
+        layout.addLayout(card_slot_layout)
 
         self.enter_btn = QPushButton('Enter')
         self.enter_btn.clicked.connect(lambda: self.handle_enter_btn())
@@ -185,3 +195,6 @@ class BaseView(QWidget):
 
     def handle_deposit_slot(self):
         print('Deposit Slot pressed, controller for this screen ignores this')
+
+    def display_list_of_accounts(self):
+        return False

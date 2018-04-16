@@ -17,6 +17,7 @@ from .TerminalStatus import *
 accounts = []
 current_account = None
 
+current_pan = ''
 current_pin = ''
 numbers_entered = 0
 pin_attempts = 0
@@ -29,7 +30,7 @@ def transition_to_welcome(from_view):
     current_account = None
     current_pin = ''
     numbers_entered = 0
-    welcome_view = WelcomeView()
+    welcome_view = WelcomeView(accounts)
     welcome_view.show()
     from_view.close()
 
@@ -40,10 +41,12 @@ def transition_to_exit(from_view):
     from_view.close()
 
 
-def transition_to_pin_entry(from_view):
-    # TODO: for now we are going with the assumption that there is only one account and not going to require entry of the PAN, moving on to PIN screen
-    print('Transitioning to PIN Entry')
+def transition_to_pin_entry(from_view, pan=None):
+    global current_pan
+    print('Transitioning to PIN Entry for pan: ' + str(pan))
     reset_pin_entry()
+    if pan is not None:
+        current_pan = pan
     pin_view = PINView(None)
     pin_view.show()
     from_view.close()
@@ -175,9 +178,8 @@ def handle_withdrawal(from_view):
 
 
 def find_account_from_pin(pin):
-    #TODO: going to need to make sure this matches the PAN at some point
     for account in accounts:
-        if account.pin == pin:
+        if account.pin == pin and account.pan == current_pan:
             return account
 
     return None

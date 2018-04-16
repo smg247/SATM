@@ -6,6 +6,7 @@ from satm.view import WelcomeView
 from satm.model import Account
 from satm.controller import Controller
 
+
 def seed_accounts():
     accounts = []
     account = Account(1, 1234)
@@ -18,8 +19,10 @@ def seed_accounts():
 
     return accounts
 
+
 if __name__ == '__main__':
-    Controller.accounts = seed_accounts()
+    accounts = seed_accounts()
+    Controller.accounts = accounts
     app = QApplication(sys.argv)
-    ex = WelcomeView()
+    ex = WelcomeView(accounts)
     sys.exit(app.exec_())
