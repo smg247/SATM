@@ -1,18 +1,18 @@
-from ..view.WelcomeView import WelcomeView
-from ..view.PINView import PINView
-from ..view.SelectTransactionView import SelectTransactionView
-from ..view.BalanceView import BalanceView
-from ..view.BalancePrintingView import BalancePrintingView
-from ..view.IncorrectPINView import IncorrectPINView
-from ..view.DepositView import DepositView
-from ..view.MalfunctionView import MalfunctionView
-from ..view.InsertDepositView import InsertDepositView
-from ..view.WithdrawalView import WithdrawalView
-from ..view.WithdrawalProcessedView import WithdrawalProcessedView
-from ..view.WithdrawalFailedView import WithdrawalFailedView
-from ..view.ExitView import ExitView
+from ..view.welcome_view import WelcomeView
+from ..view.pin_view import PINView
+from ..view.select_transaction_view import SelectTransactionView
+from ..view.balance_view import BalanceView
+from ..view.balance_printing_view import BalancePrintingView
+from ..view.incorrect_pin_view import IncorrectPINView
+from ..view.deposit_view import DepositView
+from ..view.malfunction_view import MalfunctionView
+from ..view.insert_deposit_view import InsertDepositView
+from ..view.withdrawal_view import WithdrawalView
+from ..view.withdrawal_processed_view import WithdrawalProcessedView
+from ..view.withdrawal_failed_view import WithdrawalFailedView
+from ..view.exit_view import ExitView
 
-from .TerminalStatus import *
+from .terminal_status import *
 
 accounts = []
 current_account = None

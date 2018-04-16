@@ -1,4 +1,4 @@
-from .BaseView import BaseView
+from .base_view import BaseView
 
 
 
@@ -14,14 +14,14 @@ class SelectTransactionView(BaseView):
                        '<h2>withdrawal press R3</h2>')
 
     def handle_side_btn(self, value):
-        from satm.controller import Controller
+        from satm.controller import controller
 
         if value == 'R1':
-            Controller.transition_to_show_balance(self)
+            controller.transition_to_show_balance(self)
         elif value == 'R2':
-            Controller.transition_to_deposit(self)
+            controller.transition_to_deposit(self)
         elif value == 'R3':
-            Controller.transition_to_withdrawal(self)
+            controller.transition_to_withdrawal(self)
         else:
             print ('Invalid option ' + value + ' selected, ignoring')
 

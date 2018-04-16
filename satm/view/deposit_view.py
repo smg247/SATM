@@ -1,4 +1,4 @@
-from .BaseView import BaseView
+from .base_view import BaseView
 
 
 class DepositView(BaseView):
@@ -13,10 +13,10 @@ class DepositView(BaseView):
                        '<h3>Once desired amount entered press "Enter"</h3>')
 
     def handle_numerical_btn(self, value):
-        from ..controller import Controller
-        Controller.handle_deposit_withdrawal_amount_entry(value, True, self)
+        from ..controller import controller
+        controller.handle_deposit_withdrawal_amount_entry(value, True, self)
 
     def handle_enter_btn(self):
-        from ..controller import Controller
-        Controller.transition_to_insert_deposit(self)
+        from ..controller import controller
+        controller.transition_to_insert_deposit(self)
 

@@ -1,4 +1,4 @@
-from .BaseView import BaseView
+from .base_view import BaseView
 
 
 class InsertDepositView(BaseView):
@@ -10,6 +10,6 @@ class InsertDepositView(BaseView):
         screen.setText('<h1>Please insert deposit into the Deposit Slot</h1>')
 
     def handle_deposit_slot(self):
-        from ..controller import Controller
-        Controller.handle_deposit(self)
+        from ..controller import controller
+        controller.handle_deposit(self)
 

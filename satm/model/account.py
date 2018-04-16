@@ -1,6 +1,3 @@
-
-
-
 class Account():
 
     def __init__(self, pan, pin):
@@ -15,4 +12,5 @@ class Account():
         self.balance += amount
 
     def withdraw(self, amount):
-        self.balance -= amount
+        if self.balance >= amount:
+            self.balance -= amount

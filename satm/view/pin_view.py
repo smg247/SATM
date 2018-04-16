@@ -1,4 +1,4 @@
-from .BaseView import BaseView
+from .base_view import BaseView
 
 entries = ['_ _ _ _', '_ _ _ *', '_ _ * *', '_ * * *', '* * * *']
 
@@ -19,14 +19,14 @@ class PINView(BaseView):
                        '<h2>' + entries[self.numbers_entered] + '</h2>')
 
     def handle_numerical_btn(self, value):
-        from ..controller import Controller # Who knew you could do this? I've got some cyclical imports, this solves it
-        Controller.handle_pin_entry(value, self)
+        from ..controller import controller # Who knew you could do this? I've got some cyclical imports, this solves it
+        controller.handle_pin_entry(value, self)
 
     def handle_enter_btn(self):
-        from ..controller import Controller
-        Controller.validate_pin_and_transition(self)
+        from ..controller import controller
+        controller.validate_pin_and_transition(self)
 
     def handle_clear_btn(self):
-        from ..controller import Controller
-        Controller.transition_to_pin_entry(self)
+        from ..controller import controller
+        controller.transition_to_pin_entry(self)
 

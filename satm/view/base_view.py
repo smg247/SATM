@@ -183,9 +183,9 @@ class BaseView(QWidget):
         print('clear button pressed, controller for this screen ignores this')
 
     def handle_cancel_btn(self):
-        from ..controller import Controller
+        from ..controller import controller
         print('cancel button pressed, always returns to welcome')
-        Controller.transition_to_welcome(self)
+        controller.transition_to_welcome(self)
 
     def handle_numerical_btn(self, value):
         print(str(value) + ' was pressed, controller for this screen ignores this')

@@ -1,4 +1,4 @@
-from .BaseView import BaseView
+from .base_view import BaseView
 
 
 class BalancePrintingView(BaseView):
@@ -11,9 +11,9 @@ class BalancePrintingView(BaseView):
         screen.setText('<h1>Your new balance is being printed. Another transaction? Press R1 to continue.</h1>')
 
     def handle_side_btn(self, value):
-        from satm.controller import Controller
+        from satm.controller import controller
 
         if value == 'R1':
-            Controller.transition_to_transaction_selection(self)
+            controller.transition_to_transaction_selection(self)
         else:
             print('Invalid option selected, ignoring')

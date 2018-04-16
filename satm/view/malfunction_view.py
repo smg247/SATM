@@ -1,4 +1,4 @@
-from .BaseView import BaseView
+from .base_view import BaseView
 
 
 class MalfunctionView(BaseView):
@@ -11,11 +11,11 @@ class MalfunctionView(BaseView):
         screen.setText('<h1>Temporarily unable to process ' + self.type_string + '. Another transaction? Press R1 to continue.</h1>')
 
     def handle_side_btn(self, value):
-        from satm.controller import Controller
+        from satm.controller import controller
 
         if value == 'R1':
-            Controller.transition_to_transaction_selection(self)
+            controller.transition_to_transaction_selection(self)
         elif value == 'R2':
-            Controller.transition_to_exit(self)
+            controller.transition_to_exit(self)
         else:
             print('Invalid option selected, ignoring')
