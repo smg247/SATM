@@ -35,8 +35,11 @@ class TerminalStatus():
         self.numbers_entered = 0
 
     def enter_pin_digit(self, digit):
-        self.current_pin += str(digit)
-        self.numbers_entered += 1
+        if not self.pin_completed():
+            self.current_pin += str(digit)
+            self.numbers_entered += 1
+        else:
+            raise Exception('Attempted to enter pin digits when pin was already complete')
 
     def pin_completed(self):
         return self.numbers_entered > 3
@@ -56,8 +59,7 @@ class TerminalStatus():
 
     def register_pin_attempt_and_validate_lockout(self):
         self.pin_attempts += 1
-        if self.pin_attempts >= 3:
-            return True
+        return self.pin_attempts >= 3
 
     def deposit_withdrawal_amount_entry_in_progress(self):
         return self.deposit_withdrawal_amount != ''
