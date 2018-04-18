@@ -4,7 +4,7 @@ from .base_view import BaseView
 class WithdrawalView(BaseView):
 
     def __init__(self, amount_entered):
-        self.amount_entered = amount_entered
+        self.amount_entered = str(amount_entered)
         super(WithdrawalView, self).__init__()
 
     def setScreenContent(self, screen):

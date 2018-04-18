@@ -12,25 +12,13 @@ from ..view.withdrawal_processed_view import WithdrawalProcessedView
 from ..view.withdrawal_failed_view import WithdrawalFailedView
 from ..view.exit_view import ExitView
 
-from .terminal_status import *
-
-accounts = []
-current_account = None
-
-current_pan = ''
-current_pin = ''
-numbers_entered = 0
-pin_attempts = 0
-
-deposit_withdrawal_amount = ''
+from .terminal_status import get_terminal_status
 
 
 def transition_to_welcome(from_view):
-    global current_pin, current_account, numbers_entered
-    current_account = None
-    current_pin = ''
-    numbers_entered = 0
-    welcome_view = WelcomeView(accounts)
+    terminal_status = get_terminal_status()
+    terminal_status.reset_terminal_state()
+    welcome_view = WelcomeView(terminal_status.accounts)
     welcome_view.show()
     from_view.close()
 
@@ -42,27 +30,26 @@ def transition_to_exit(from_view):
 
 
 def transition_to_pin_entry(from_view, pan=None):
-    global current_pan
     print('Transitioning to PIN Entry for pan: ' + str(pan))
-    reset_pin_entry()
-    if pan is not None:
-        current_pan = pan
+    terminal_status = get_terminal_status()
+    terminal_status.reset_pin_entry()
+    if pan:
+        terminal_status.current_pan = pan
+
     pin_view = PINView(None)
     pin_view.show()
     from_view.close()
 
 
 def handle_pin_entry(number, from_view):
-    global current_pin, numbers_entered
-
-    if numbers_entered > 3:
+    terminal_status = get_terminal_status()
+    if terminal_status.pin_completed():
         print('Already entered 4 PIN numbers, ignoring this one')
     else:
-        numbers_entered += 1
-        current_pin += str(number)
-        print('pin is now: ' + current_pin)
+        terminal_status.enter_pin_digit(number)
+        print('pin is now: ' + terminal_status.current_pin)
 
-    new_pin_view = PINView(current_pin)
+    new_pin_view = PINView(terminal_status.current_pin)
     new_pin_view.show()
     from_view.close()
 
@@ -75,44 +62,44 @@ def transition_to_transaction_selection(from_view):
 
 
 def validate_pin_and_transition(from_view):
-    global current_account, pin_attempts
-
-    account = find_account_from_pin(current_pin)
-    if account is not None:
+    terminal_status = get_terminal_status()
+    account = terminal_status.get_account()
+    if account:
         print('Correctly entered PIN for account number: ' + account.pan)
-        pin_attempts = 0
-        current_account = account
         transition_to_transaction_selection(from_view)
     else:
         print('Incorrectly entered PIN')
-        pin_attempts += 1
-        if pin_attempts > 2:
+        if terminal_status.register_pin_attempt_and_validate_lockout():
             print('PIN attempts exceeded, keeping card')
             quit(1)
-        reset_pin_entry()
+
+        terminal_status.reset_pin_entry()
         incorrect_pin_view = IncorrectPINView()
         incorrect_pin_view.show()
 
 
 def transition_to_balance_printing(from_view):
     print('Transitioning to balance')
-    balance_printing_view = BalancePrintingView(current_account)
+    terminal_status = get_terminal_status()
+    balance_printing_view = BalancePrintingView(terminal_status.get_account())
     balance_printing_view.show()
     from_view.close()
 
 
 def transition_to_show_balance(from_view):
     print('Transitioning to showing balance')
-    balance_view = BalanceView(current_account)
+    terminal_status = get_terminal_status()
+    balance_view = BalanceView(terminal_status.get_account())
     balance_view.show()
     from_view.close()
 
 
 def transition_to_deposit(from_view):
     print('Transitioning to deposit')
-    if deposit_withdrawal_amount != '' or is_deposit_slot_functional():
+    terminal_status = get_terminal_status()
+    if terminal_status.deposit_withdrawal_amount_entry_in_progress() or terminal_status.is_deposit_slot_functional():
         print('Deposit slot functional')
-        deposit_view = DepositView(deposit_withdrawal_amount)
+        deposit_view = DepositView(terminal_status.deposit_withdrawal_amount)
         deposit_view.show()
     else:
         print('Deposit slot not functional')
@@ -124,8 +111,9 @@ def transition_to_deposit(from_view):
 
 def transition_to_withdrawal(from_view):
     print('Transitioning to withdrawal')
-    if deposit_withdrawal_amount != '' or is_withdrawal_slot_functional():
-        withdrawal_view = WithdrawalView(deposit_withdrawal_amount)
+    terminal_status = get_terminal_status()
+    if terminal_status.deposit_withdrawal_amount_entry_in_progress() or terminal_status.is_withdrawal_slot_functional():
+        withdrawal_view = WithdrawalView(terminal_status.deposit_withdrawal_amount)
         withdrawal_view.show()
     else:
         print('Withdrawal not functional')
@@ -136,9 +124,9 @@ def transition_to_withdrawal(from_view):
 
 
 def handle_deposit_withdrawal_amount_entry(number, is_deposit, from_view):
-    global deposit_withdrawal_amount
-    deposit_withdrawal_amount += str(number)
-    print('deposit/withdrawal amount is now: ' + str(deposit_withdrawal_amount))
+    terminal_status = get_terminal_status()
+    terminal_status.enter_deposit_withdrawal_digit(number)
+    print('deposit/withdrawal amount is now: ' + str(terminal_status.deposit_withdrawal_amount))
     if is_deposit:
         transition_to_deposit(from_view)
     else:
@@ -153,39 +141,23 @@ def transition_to_insert_deposit(from_view):
 
 
 def handle_deposit(from_view):
-    global deposit_withdrawal_amount
-    print('Deposit slot used with amount of ' + str(deposit_withdrawal_amount))
-    current_account.deposit(int(deposit_withdrawal_amount))
-    deposit_withdrawal_amount = ''
+    terminal_status = get_terminal_status()
+    print('Deposit slot used with amount of ' + str(terminal_status.deposit_withdrawal_amount))
+    terminal_status.deposit_into_current_account()
     transition_to_balance_printing(from_view)
 
 
 def handle_withdrawal(from_view):
-    global deposit_withdrawal_amount
-    print('Withdrawal requested for amount of ' + str(deposit_withdrawal_amount))
-    if int(total_currency()) >= int(deposit_withdrawal_amount) and int(deposit_withdrawal_amount) % 10 == 0 and int(current_account.balance) >= int(deposit_withdrawal_amount):
+    terminal_status = get_terminal_status()
+    print('Withdrawal requested for amount of ' + str(terminal_status.deposit_withdrawal_amount))
+    if terminal_status.able_to_process_withdrawal():
         print('Withdrawal processed')
-        current_account.withdraw(int(deposit_withdrawal_amount))
-        withdrawal_processed_view = WithdrawalProcessedView(deposit_withdrawal_amount)
+        amount_withdrawn = terminal_status.withdraw_from_current_account()
+        withdrawal_processed_view = WithdrawalProcessedView(amount_withdrawn)
         withdrawal_processed_view.show()
     else:
         print('Unable to perform withdrawal')
         withdrawal_failed_view = WithdrawalFailedView()
         withdrawal_failed_view.show()
 
-    deposit_withdrawal_amount = ''
     from_view.close()
-
-
-def find_account_from_pin(pin):
-    for account in accounts:
-        if account.pin == pin and account.pan == current_pan:
-            return account
-
-    return None
-
-
-def reset_pin_entry():
-    global current_pin, numbers_entered
-    current_pin = ''
-    numbers_entered = 0

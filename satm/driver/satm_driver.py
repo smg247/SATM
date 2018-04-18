@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QApplication, QWidget
 
 from satm.view import WelcomeView
 from satm.model import Account
-from satm.controller import controller
+from satm.controller.terminal_status import init_terminal_status
 
 
 def seed_accounts():
@@ -22,7 +22,7 @@ def seed_accounts():
 
 if __name__ == '__main__':
     accounts = seed_accounts()
-    controller.accounts = accounts
+    terminal_status = init_terminal_status(accounts)
     app = QApplication(sys.argv)
     ex = WelcomeView(accounts)
     sys.exit(app.exec_())
