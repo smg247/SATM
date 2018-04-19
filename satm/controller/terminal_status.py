@@ -8,8 +8,7 @@ def get_terminal_status():
 
 def init_terminal_status(accounts):
     global terminal_status
-    if not terminal_status:
-        terminal_status = TerminalStatus(accounts)
+    terminal_status = TerminalStatus(accounts)
 
 
 class TerminalStatus():

@@ -1,3 +1,5 @@
+from PyQt5.QtWidgets import QApplication
+
 from ..view.welcome_view import WelcomeView
 from ..view.pin_view import PINView
 from ..view.select_transaction_view import SelectTransactionView
@@ -71,11 +73,12 @@ def validate_pin_and_transition(from_view):
         print('Incorrectly entered PIN')
         if terminal_status.register_pin_attempt_and_validate_lockout():
             print('PIN attempts exceeded, keeping card')
-            quit(1)
-
-        terminal_status.reset_pin_entry()
-        incorrect_pin_view = IncorrectPINView()
-        incorrect_pin_view.show()
+            transition_to_welcome(from_view)
+        else:
+            terminal_status.reset_pin_entry()
+            incorrect_pin_view = IncorrectPINView()
+            incorrect_pin_view.show()
+            from_view.close()
 
 
 def transition_to_balance_printing(from_view):

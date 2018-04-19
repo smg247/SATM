@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout
 
 from satm.view import WelcomeView
 from satm.model import Account
@@ -21,8 +21,8 @@ def seed_accounts():
 
 
 if __name__ == '__main__':
+    app = QApplication(sys.argv)
     accounts = seed_accounts()
     terminal_status = init_terminal_status(accounts)
-    app = QApplication(sys.argv)
-    ex = WelcomeView(accounts)
+    window = WelcomeView(accounts)
     sys.exit(app.exec_())

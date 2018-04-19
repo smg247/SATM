@@ -140,8 +140,9 @@ class BaseView(QWidget):
         self.card_slot = QComboBox()
         if self.display_list_of_accounts():
             self.card_slot.addItem('Select PAN')
+            self.account_selection = dict()
             for account in self.accounts:
-                self.card_slot.addItem(account.pan)
+                self.account_selection[account.pan] = self.card_slot.addItem(account.pan)
         else:
             self.card_slot.addItem('CARD INSERTED')
 
